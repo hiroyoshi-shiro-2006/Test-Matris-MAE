@@ -1,547 +1,518 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Toán Ma Trận</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.min.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .matrix {
+            display: inline-block;
+            border: 2px solid #e0e0e0;
+            padding: 5px;
+            margin: 5px;
+        }
+        .matrix-row {
             display: flex;
-            justify-content: center;
+        }
+        .matrix span {
+            width: 40px;
+            display: inline-block;
+            text-align: center;
+        }
+        .options label {
+            display: flex;
             align-items: center;
-            min-height: 100vh;
-        }
-        #quizContainer {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 800px;
-        }
-        h1 {
-            font-size: 24px;
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        h2 {
-            font-size: 20px;
-            color: #2c3e50;
-            text-align: center;
-        }
-        p {
-            color: #7f8c8d;
-            text-align: center;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #dfe6e9;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .btn-option {
-            background-color: #3498db;
-            color: white;
-            margin: 5px;
-        }
-        .btn-option:hover {
-            background-color: #2980b9;
-        }
-        .btn-correct {
-            background-color: #2ecc71;
-        }
-        .btn-correct:hover {
-            background-color: #27ae60;
-        }
-        .btn-incorrect {
-            background-color: #e74c3c;
-        }
-        .btn-incorrect:hover {
-            background-color: #c0392b;
-        }
-        .btn-option:disabled {
-            opacity: 1;
-            cursor: default;
-        }
-        .btn-start {
-            background-color: #2ecc71;
-            color: white;
-            width: 100%;
-        }
-        .btn-start:hover {
-            background-color: #27ae60;
-        }
-        .btn-back {
-            background-color: #f1c40f;
-            color: white;
-        }
-        .btn-back:hover {
-            background-color: #d4ac0d;
-        }
-        .btn-next {
-            background-color: #3498db;
-            color: white;
-        }
-        .btn-next:hover {
-            background-color: #2980b9;
-        }
-        .btn-finish {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .btn-finish:hover {
-            background-color: #c0392b;
-        }
-        .btn-topic {
-            background-color: #9b59b6;
-            color: white;
-            margin: 5px;
-            width: 45%;
-        }
-        .btn-topic:hover {
-            background-color: #8e44ad;
-        }
-        .btn-topic.selected {
-            background-color: #8e44ad;
-            border: 2px solid #2c3e50;
-        }
-        #timer-box {
-            background-color: #2ecc71;
-            color: white;
-            font-size: 16px;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #options {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-        #options div {
-            text-align: center;
-            width: 100%;
-        }
-        #navigation {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        #feedback {
-            color: #7f8c8d;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .matrix-container {
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-        .hidden {
-            display: none;
-        }
-        .topics-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            margin: 15px 0;
-        }
-        #resultScreen {
-            text-align: center;
-        }
-        #resultDetails {
-            margin: 20px 0;
-        }
-        .restart-btn {
-            background-color: #3498db;
-            color: white;
-            width: 100%;
-            margin-top: 20px;
-        }
-        .restart-btn:hover {
-            background-color: #2980b9;
+            gap: 8px;
+            padding: 8px 0;
         }
     </style>
 </head>
-<body>
-    <div id="quizContainer">
-        <div id="introScreen">
-            <h1>Quiz Toán Ma Trận</h1>
-            <p>Vui lòng nhập thông tin sinh viên và chọn chủ đề:</p>
-            <input id="studentName" type="text" placeholder="Họ tên">
-            <input id="studentId" type="text" placeholder="MSSV">
-            
-            <div class="topics-container">
-                <button class="btn-topic" data-topic="multiply">Nhân Ma Trận</button>
-                <button class="btn-topic" data-topic="add">Cộng Ma Trận</button>
-                <button class="btn-topic" data-topic="determinant">Định Thức</button>
-                <button class="btn-topic" data-topic="inverse">Ma Trận Đảo</button>
-            </div>
-            
-            <select id="matrixSize">
-                <option value="2">Ma trận 2x2</option>
-                <option value="3">Ma trận 3x3</option>
-            </select>
-            
-            <button id="startQuizButton" class="btn-start">Bắt đầu bài thi</button>
-        </div>
-        
-        <div id="quizScreen" class="hidden">
-            <div id="timer-box">Thời gian: 00:00</div>
-            <div id="questionText" class="mb-4"></div>
-            <div id="options" class="space-y-4"></div>
-            <div id="feedback"></div>
-            <div id="navigation" class="mt-4">
-                <button onclick="goBack()" class="btn-back">Back</button>
-                <button onclick="goNext()" class="btn-next">Next</button>
-                <button onclick="finishQuiz()" class="btn-finish">Finish</button>
+<body class="min-h-screen bg-base-200 flex items-center justify-center p-4">
+    <div class="container card bg-base-100 shadow-xl p-6 w-full max-w-4xl">
+        <h1 class="text-3xl font-bold text-center mb-6">Quiz Toán Ma Trận</h1>
+        <div id="info-area">
+            <p class="text-lg text-center mb-4">Vui lòng nhập thông tin và chọn chủ đề:</p>
+            <div class="space-y-2">
+                <div class="flex gap-4">
+                    <input type="text" id="student-id" placeholder="Mã số sinh viên" class="input input-bordered w-full" required>
+                    <input type="text" id="student-name" placeholder="Họ và tên" class="input input-bordered w-full" required>
+                </div>
+                <div class="form-control">
+                    <select id="topic" class="select select-bordered w-full">
+                        <option value="multiply">Nhân Ma Trận</option>
+                        <option value="add">Cộng Ma Trận</option>
+                        <option value="determinant">Định Thức</option>
+                        <option value="inverse">Ma Trận Đảo</option>
+                        <option value="cofactor">Tìm Cofactor</option>
+                    </select>
+                </div>
+                <div class="form-control">
+                    <select id="matrix-size" class="select select-bordered w-full">
+                        <option value="2x2">Ma trận 2x2</option>
+                        <option value="3x3">Ma trận 3x3</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary w-full" onclick="startQuiz()">Bắt đầu bài thi</button>
             </div>
         </div>
-        
-        <div id="resultScreen" class="hidden">
-            <h2>Kết quả bài thi</h2>
-            <div id="resultDetails"></div>
-            <div id="timeTakenDisplay"></div>
-            <button onclick="restartQuiz()" class="restart-btn">Làm bài lại</button>
+
+        <div id="timer" class="text-lg text-center my-4">Thời gian: 00:00</div>
+
+        <div id="quiz-area" class="hidden">
+            <div id="error-message" class="alert alert-error hidden">
+                <span>Vui lòng chọn đáp án cho tất cả các câu trước khi nộp bài!</span>
+            </div>
+            <div id="questions" class="space-y-6"></div>
+            <button class="btn btn-primary w-full mt-4" onclick="finishQuiz()">Nộp bài</button>
+        </div>
+
+        <div id="result-area" class="hidden">
+            <h2 class="text-2xl font-bold text-center mb-4">Kết quả bài thi</h2>
+            <p id="result" class="text-lg text-center mb-6"></p>
+            <div id="explanation" class="space-y-4 prose max-w-none"></div>
+            <button class="btn btn-primary w-full mt-4" onclick="resetQuiz()">Làm bài lại</button>
+        </div>
+        <!-- Popup kết quả -->
+        <div id="result-popup" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+            <div class="bg-base-100 rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
+                <h2 class="text-2xl font-bold mb-4">Kết quả của bạn</h2>
+                <p id="popup-student-name" class="mb-2"></p>
+                <p id="popup-student-id" class="mb-2"></p>
+                <p id="popup-score" class="mb-4"></p>
+                <button class="btn btn-primary w-full" onclick="closeResultPopup()">Xem giải thích</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Biến toàn cục
-        let questions = [];
-        let currentQuestion = 0;
         let score = 0;
-        let studentName = "";
-        let studentId = "";
-        let quizStarted = false;
-        let startTime = 0;
-        let endTime = 0;
-        let timerInterval;
-        let selectedTopic = "";
-        let matrixSize = 2;
-
-        // Khởi tạo quiz
-        document.getElementById('startQuizButton').addEventListener('click', startQuiz);
-        
-        // Xử lý chọn chủ đề
-        const topicButtons = document.querySelectorAll('.btn-topic');
-        topicButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                topicButtons.forEach(btn => btn.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedTopic = this.dataset.topic;
-            });
-        });
+        let timer;
+        let seconds = 0;
+        let questions = [];
+        let userAnswers = [];
+        const labels = ['A', 'B', 'C', 'D'];
+        // Thêm biến lưu thông tin sinh viên
+        let studentId = '';
+        let studentName = '';
 
         function startQuiz() {
-            studentName = document.getElementById('studentName').value;
-            studentId = document.getElementById('studentId').value;
-            matrixSize = parseInt(document.getElementById('matrixSize').value);
-            
-            if (!studentName || !studentId) {
-                alert("Vui lòng nhập đầy đủ họ tên và MSSV!");
+            studentId = document.getElementById('student-id').value.trim();
+            studentName = document.getElementById('student-name').value.trim();
+            if (!studentId || !studentName) {
+                alert('Vui lòng nhập đầy đủ mã số sinh viên và họ tên!');
                 return;
             }
-            
-            if (!selectedTopic) {
-                alert("Vui lòng chọn chủ đề!");
-                return;
-            }
-            
-            document.getElementById('introScreen').classList.add('hidden');
-            document.getElementById('quizScreen').classList.remove('hidden');
-            
-            // Tạo câu hỏi theo chủ đề
-            questions = generateQuestions(selectedTopic, matrixSize);
-            showQuestion();
-            
-            // Bắt đầu đếm thời gian
-            startTime = new Date().getTime();
-            timerInterval = setInterval(updateTimer, 1000);
-            quizStarted = true;
+            document.getElementById('info-area').style.display = 'none';
+            document.getElementById('quiz-area').classList.remove('hidden');
+            generateQuestions();
+            showQuestions();
+            startTimer();
         }
 
-        function generateQuestions(topic, size) {
-            const questions = [];
-            
-            for (let i = 0; i < 5; i++) {
-                let question, options, answer, explanation;
-                const matrix1 = generateRandomMatrix(size);
-                const matrix2 = generateRandomMatrix(size);
-                
-                switch(topic) {
-                    case "multiply":
-                        const product = math.multiply(matrix1, matrix2);
-                        question = `Tính tích của hai ma trận sau:`;
-                        options = generateMatrixOptions(product, size);
-                        answer = 0;
-                        explanation = `Tích của hai ma trận được tính bằng cách nhân từng hàng của ma trận thứ nhất với từng cột của ma trận thứ hai. 
-                            Kết quả: ${JSON.stringify(product)}`;
-                        break;
-                        
-                    case "add":
-                        const sum = math.add(matrix1, matrix2);
-                        question = `Tính tổng của hai ma trận sau:`;
-                        options = generateMatrixOptions(sum, size);
-                        answer = 0;
-                        explanation = `Tổng hai ma trận được tính bằng cách cộng các phần tử tương ứng. 
-                            Kết quả: ${JSON.stringify(sum)}`;
-                        break;
-                        
-                    case "determinant":
-                        const det = math.det(matrix1);
-                        const roundedDet = Math.round(det * 100) / 100;
-                        question = `Tính định thức của ma trận sau:`;
-                        options = generateNumberOptions(roundedDet);
-                        answer = 0;
-                        explanation = `Định thức của ma trận ${size}x${size} được tính theo công thức phù hợp. 
-                            Kết quả: ${roundedDet}`;
-                        break;
-                        
-                    case "inverse":
-                        try {
-                            const inv = math.inv(matrix1);
-                            const roundedInv = inv.map(row => row.map(val => Math.round(val * 100) / 100));
-                            question = `Tìm ma trận nghịch đảo của ma trận sau:`;
-                            options = generateMatrixOptions(roundedInv, size);
-                            answer = 0;
-                            explanation = `Ma trận nghịch đảo được tính bằng cách sử dụng công thức hoặc phương pháp khử Gauss-Jordan. 
-                                Kết quả: ${JSON.stringify(roundedInv)}`;
-                        } catch (e) {
-                            // Nếu ma trận không khả nghịch, tạo ma trận mới
-                            return generateQuestions(topic, size);
-                        }
-                        break;
-                }
-                
-                questions.push({
-                    question: question,
-                    matrix1: matrix1,
-                    matrix2: topic !== "determinant" && topic !== "inverse" ? matrix2 : null,
-                    options: options,
-                    answer: answer,
-                    explanation: explanation
-                });
-            }
-            
-            return questions;
+        function startTimer() {
+            timer = setInterval(() => {
+                seconds++;
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('timer').textContent = 
+                    `Thời gian: ${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
         }
 
         function generateRandomMatrix(size) {
-            return Array.from({length: size}, () => 
-                Array.from({length: size}, () => Math.floor(Math.random() * 10) - 5)
-            );
-        }
-
-        function generateMatrixOptions(correctMatrix, size) {
-            const options = [correctMatrix];
-            
-            // Tạo 3 ma trận sai lệch
-            while (options.length < 4) {
-                const option = Array.from({length: size}, () => 
-                    Array.from({length: size}, () => {
-                        const noise = Math.floor(Math.random() * 3) - 1;
-                        const row = Math.floor(Math.random() * size);
-                        const col = Math.floor(Math.random() * size);
-                        const value = correctMatrix[row][col] + noise;
-                        return Math.round(value * 100) / 100;
-                    })
-                );
-                
-                // Đảm bảo option không trùng với các option khác
-                if (!options.some(opt => JSON.stringify(opt) === JSON.stringify(option))) {
-                    options.push(option);
+            const matrix = [];
+            for (let i = 0; i < size; i++) {
+                const row = [];
+                for (let j = 0; j < size; j++) {
+                    row.push(Math.floor(Math.random() * 11) - 5); // Random from -5 to 5
                 }
-            }
-            
-            // Xáo trộn các option
-            return options.sort(() => Math.random() - 0.5);
-        }
-
-        function generateNumberOptions(correctNumber) {
-            const options = [correctNumber];
-            
-            while (options.length < 4) {
-                const noise = Math.floor(Math.random() * 5) - 2;
-                const option = correctNumber + noise;
-                
-                if (!options.includes(option)) {
-                    options.push(option);
-                }
-            }
-            
-            return options.sort(() => Math.random() - 0.5);
-        }
-
-        function showQuestion() {
-            const question = questions[currentQuestion];
-            let questionHTML = `<p>${question.question}</p>`;
-            
-            // Hiển thị ma trận
-            questionHTML += `<div class="matrix-container">`;
-            questionHTML += `<p>Ma trận A:</p>`;
-            questionHTML += `<p>\\[${matrixToLatex(question.matrix1)}\]</p>`;
-            
-            if (question.matrix2) {
-                questionHTML += `<p>Ma trận B:</p>`;
-                questionHTML += `<p>\\[${matrixToLatex(question.matrix2)}\]</p>`;
-            }
-            questionHTML += `</div>`;
-            
-            document.getElementById('questionText').innerHTML = questionHTML;
-            
-            const optionsDiv = document.getElementById('options');
-            optionsDiv.innerHTML = '';
-            
-            question.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'btn-option';
-                
-                if (Array.isArray(option)) {
-                    button.innerHTML = `\\[${matrixToLatex(option)}\]`;
-                } else {
-                    button.textContent = option;
-                }
-                
-                button.onclick = () => selectOption(index);
-                optionsDiv.appendChild(button);
-            });
-            
-            document.getElementById('feedback').innerHTML = '';
-            updateNavigationButtons();
-            MathJax.typeset();
-        }
-
-        function matrixToLatex(matrix) {
-            if (Array.isArray(matrix)) {
-                return `\\begin{bmatrix} ${matrix.map(row => row.join(' & ')).join(' \\\\ ')} \\end{bmatrix}`;
+                matrix.push(row);
             }
             return matrix;
         }
 
-        function selectOption(selectedIndex) {
-            const question = questions[currentQuestion];
-            const options = document.querySelectorAll('.btn-option');
-            
-            options.forEach((option, index) => {
-                option.disabled = true;
-                if (index === question.answer) {
-                    option.className = 'btn-correct';
-                } else if (index === selectedIndex && index !== question.answer) {
-                    option.className = 'btn-incorrect';
+        function matrixToString(matrix) {
+            let html = '<div class="matrix">';
+            for (let row of matrix) {
+                html += '<div class="matrix-row">';
+                for (let val of row) {
+                    const formattedVal = Number.isInteger(val) ? val : val.toFixed(2);
+                    html += `<span>${formattedVal}</span>`;
                 }
-            });
-            
-            if (selectedIndex === question.answer) {
-                score++;
-                document.getElementById('feedback').innerHTML = '<p style="color: #2ecc71;">Chính xác!</p>';
+                html += '</div>';
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function matrixToAnswer(matrix) {
+            return JSON.stringify(matrix.map(row => row.map(val => Number.isInteger(val) ? val : parseFloat(val.toFixed(2)))));
+        }
+
+        function generateRandomWrongAnswers(correctAnswer, isMatrix, size) {
+            const wrongAnswers = [];
+            while (wrongAnswers.length < 3) {
+                let wrong;
+                if (isMatrix) {
+                    const matrix = generateRandomMatrix(size);
+                    wrong = matrixToAnswer(matrix);
+                } else {
+                    const offset = Math.floor(Math.random() * 10) - 5;
+                    wrong = (parseInt(correctAnswer) + offset).toString();
+                }
+                if (wrong !== correctAnswer && !wrongAnswers.includes(wrong)) {
+                    wrongAnswers.push(wrong);
+                }
+            }
+            return wrongAnswers;
+        }
+
+        function generateQuestions() {
+            const topic = document.getElementById('topic').value;
+            const size = document.getElementById('matrix-size').value === '2x2' ? 2 : 3;
+            questions = [];
+
+            for (let i = 0; i < 5; i++) {
+                const matrixA = generateRandomMatrix(size);
+                let matrixB, answer, explanation, text, options;
+
+                if (topic === 'multiply') {
+                    matrixB = generateRandomMatrix(size);
+                    answer = multiplyMatrices(matrixA, matrixB, size);
+                    text = `Nhân hai ma trận: ${matrixToString(matrixA)} và ${matrixToString(matrixB)}`;
+                    explanation = generateMultiplyExplanation(matrixA, matrixB, answer, size);
+                    options = [matrixToAnswer(answer), ...generateRandomWrongAnswers(matrixToAnswer(answer), true, size)];
+                } else if (topic === 'add') {
+                    matrixB = generateRandomMatrix(size);
+                    answer = addMatrices(matrixA, matrixB, size);
+                    text = `Cộng hai ma trận: ${matrixToString(matrixA)} và ${matrixToString(matrixB)}`;
+                    explanation = generateAddExplanation(matrixA, matrixB, answer, size);
+                    options = [matrixToAnswer(answer), ...generateRandomWrongAnswers(matrixToAnswer(answer), true, size)];
+                } else if (topic === 'determinant') {
+                    answer = calculateDeterminant(matrixA, size);
+                    text = `Tính định thức ma trận: ${matrixToString(matrixA)}`;
+                    explanation = generateDeterminantExplanation(matrixA, answer, size);
+                    options = [answer.toString(), ...generateRandomWrongAnswers(answer.toString(), false)];
+                } else if (topic === 'inverse') {
+                    const det = calculateDeterminant(matrixA, size);
+                    if (det === 0) {
+                        i--;
+                        continue;
+                    }
+                    answer = calculateInverse(matrixA, det, size);
+                    text = `Tìm ma trận đảo của: ${matrixToString(matrixA)}`;
+                    explanation = generateInverseExplanation(matrixA, answer, det, size);
+                    options = [matrixToAnswer(answer), ...generateRandomWrongAnswers(matrixToAnswer(answer), true, size)];
+                } else if (topic === 'cofactor') {
+                    const row = Math.floor(Math.random() * size);
+                    const col = Math.floor(Math.random() * size);
+                    answer = cofactor(matrixA, row, col, size);
+                    text = `Tính cofactor C(${row + 1},${col + 1}) của ma trận: ${matrixToString(matrixA)}`;
+                    explanation = generateCofactorExplanation(matrixA, answer, row, col, size);
+                    options = [answer.toString(), ...generateRandomWrongAnswers(answer.toString(), false)];
+                }
+
+                const labeledOptions = options.map((opt, idx) => ({
+                    label: labels[idx],
+                    value: opt,
+                    display: topic === 'determinant' || topic === 'cofactor' ? opt : JSON.parse(opt)
+                }));
+                labeledOptions.sort(() => Math.random() - 0.5);
+
+                questions.push({
+                    text,
+                    answer: typeof answer === 'number' ? answer.toString() : matrixToAnswer(answer),
+                    answerLabel: labeledOptions.find(opt => opt.value === (typeof answer === 'number' ? answer.toString() : matrixToAnswer(answer))).label,
+                    explanation,
+                    options: labeledOptions
+                });
+            }
+        }
+
+        function multiplyMatrices(A, B, size) {
+            const result = Array(size).fill().map(() => Array(size).fill(0));
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    for (let k = 0; k < size; k++) {
+                        result[i][j] += A[i][k] * B[k][j];
+                    }
+                }
+            }
+            return result;
+        }
+
+        function addMatrices(A, B, size) {
+            const result = Array(size).fill().map(() => Array(size).fill(0));
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    result[i][j] = A[i][j] + B[i][j];
+                }
+            }
+            return result;
+        }
+
+        function calculateDeterminant(matrix, size) {
+            if (size === 2) {
+                return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
             } else {
-                document.getElementById('feedback').innerHTML = `<p style="color: #e74c3c;">Sai rồi. Giải thích: ${question.explanation}</p>`;
+                let det = 0;
+                for (let j = 0; j < size; j++) {
+                    det += matrix[0][j] * cofactor(matrix, 0, j, size);
+                }
+                return det;
             }
         }
 
-        function goBack() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                showQuestion();
-            }
+        function cofactor(matrix, row, col, size) {
+            const minor = getMinor(matrix, row, col, size);
+            const sign = (row + col) % 2 === 0 ? 1 : -1;
+            return sign * calculateDeterminant(minor, size - 1);
         }
 
-        function goNext() {
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                showQuestion();
+        function getMinor(matrix, row, col, size) {
+            const minor = [];
+            for (let i = 0; i < size; i++) {
+                if (i === row) continue;
+                const minorRow = [];
+                for (let j = 0; j < size; j++) {
+                    if (j !== col) minorRow.push(matrix[i][j]);
+                }
+                minor.push(minorRow);
             }
+            return minor;
+        }
+
+        function calculateInverse(matrix, det, size) {
+            const adjugate = Array(size).fill().map(() => Array(size).fill(0));
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    adjugate[j][i] = cofactor(matrix, i, j, size);
+                }
+            }
+            const inverse = adjugate.map(row => row.map(val => parseFloat((val / det).toFixed(2))));
+            return inverse;
+        }
+
+        function generateMultiplyExplanation(A, B, result, size) {
+            let explanation = '<h3 class="text-lg font-semibold">Giải thích chi tiết:</h3>';
+            explanation += '<p>Để nhân hai ma trận, ta lấy hàng của ma trận A nhân với cột của ma trận B:</p>';
+            explanation += `<div class="font-bold mt-2">Ma trận A:</div> ${matrixToString(A)}`;
+            explanation += `<div class="font-bold mt-2">Ma trận B:</div> ${matrixToString(B)}`;
+            explanation += '<div class="font-bold mt-2">Các bước tính:</div><ul class="list-disc pl-5">';
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    let calc = [];
+                    let sum = 0;
+                    for (let k = 0; k < size; k++) {
+                        const product = A[i][k] * B[k][j];
+                        calc.push(`${A[i][k]} × ${B[k][j]} = ${product}`);
+                        sum += product;
+                    }
+                    explanation += `<li>Phần tử [${i+1},${j+1}]: ${calc.join(' + ')} = ${sum}</li>`;
+                }
+            }
+            explanation += '</ul>';
+            explanation += `<div class="font-bold mt-2">Kết quả:</div> ${matrixToString(result)}`;
+            return explanation;
+        }
+
+        function generateAddExplanation(A, B, result, size) {
+            let explanation = '<h3 class="text-lg font-semibold">Giải thích chi tiết:</h3>';
+            explanation += '<p>Để cộng hai ma trận, ta cộng các phần tử ở cùng vị trí của ma trận A và B:</p>';
+            explanation += `<div class="font-bold mt-2">Ma trận A:</div> ${matrixToString(A)}`;
+            explanation += `<div class="font-bold mt-2">Ma trận B:</div> ${matrixToString(B)}`;
+            explanation += '<div class="font-bold mt-2">Các bước tính:</div><ul class="list-disc pl-5">';
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    explanation += `<li>Phần tử [${i+1},${j+1}]: ${A[i][j]} + ${B[i][j]} = ${result[i][j]}</li>`;
+                }
+            }
+            explanation += '</ul>';
+            explanation += `<div class="font-bold mt-2">Kết quả:</div> ${matrixToString(result)}`;
+            return explanation;
+        }
+
+        function generateDeterminantExplanation(matrix, det, size) {
+            let explanation = '<h3 class="text-lg font-semibold">Giải thích chi tiết:</h3>';
+            if (size === 2) {
+                explanation += '<p>Định thức ma trận 2x2 được tính bằng công thức: det = ad - bc, trong đó a, b, c, d là các phần tử của ma trận.</p>';
+                explanation += `<div class="font-bold mt-2">Ma trận:</div> ${matrixToString(matrix)}`;
+                explanation += `<p class="mt-2">Gán giá trị:</p><ul class="list-disc pl-5">`;
+                explanation += `<li>a = ${matrix[0][0]}</li>`;
+                explanation += `<li>b = ${matrix[0][1]}</li>`;
+                explanation += `<li>c = ${matrix[1][0]}</li>`;
+                explanation += `<li>d = ${matrix[1][1]}</li>`;
+                explanation += '</ul>';
+                explanation += `<p class="mt-2">Tính toán:</p>`;
+                explanation += `<p>det = ${matrix[0][0]} × ${matrix[1][1]} - ${matrix[0][1]} × ${matrix[1][0]} = ${matrix[0][0] * matrix[1][1]} - ${matrix[0][1] * matrix[1][0]} = ${det}</p>`;
+            } else {
+                explanation += '<p>Định thức ma trận 3x3 được tính bằng cách mở rộng theo hàng đầu tiên:</p>';
+                explanation += `<div class="font-bold mt-2">Ma trận:</div> ${matrixToString(matrix)}`;
+                explanation += `<p class="mt-2">Công thức: det = a₁₁ × cofactor(1,1) + a₁₂ × cofactor(1,2) + a₁₃ × cofactor(1,3)</p>`;
+                explanation += '<div class="font-bold mt-2">Các bước tính:</div><ul class="list-disc pl-5">';
+                let calc = [];
+                for (let j = 0; j < size; j++) {
+                    const sign = j % 2 === 0 ? '+' : '-';
+                    const cof = cofactor(matrix, 0, j, size);
+                    calc.push(`${sign} ${matrix[0][j]} × (${cof})`);
+                    explanation += `<li>Cofactor(1,${j+1}): ${cof}</li>`;
+                }
+                explanation += '</ul>';
+                explanation += `<p class="mt-2">Tính toán: ${calc.join(' ')} = ${det}</p>`;
+            }
+            return explanation;
+        }
+
+        function generateInverseExplanation(matrix, inverse, det, size) {
+            let explanation = '<h3 class="text-lg font-semibold">Giải thích chi tiết:</h3>';
+            explanation += '<p>Để tìm ma trận đảo, ta dùng công thức: A⁻¹ = (1/det(A)) × adj(A), trong đó adj(A) là ma trận adjugate (chuyển vị của ma trận cofactor).</p>';
+            explanation += `<div class="font-bold mt-2">Ma trận A:</div> ${matrixToString(matrix)}`;
+            explanation += `<div class="font-bold mt-2">Bước 1: Tính định thức</div>`;
+            explanation += `<p>det(A) = ${det}</p>`;
+            explanation += `<div class="font-bold mt-2">Bước 2: Tính ma trận cofactor</div><ul class="list-disc pl-5">`;
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    const cof = cofactor(matrix, i, j, size);
+                    explanation += `<li>Cofactor(${i+1},${j+1}) = ${cof}</li>`;
+                }
+            }
+            explanation += '</ul>';
+            explanation += `<div class="font-bold mt-2">Bước 3: Tính ma trận adjugate</div>`;
+            explanation += `<p>Adjugate là ma trận chuyển vị của ma trận cofactor.</p>`;
+            explanation += `<div class="font-bold mt-2">Bước 4: Tính ma trận đảo</div>`;
+            explanation += `<p>A⁻¹ = (1/${det}) × adj(A) = ${matrixToString(inverse)}</p>`;
+            return explanation;
+        }
+
+        function generateCofactorExplanation(matrix, answer, row, col, size) {
+            const minor = getMinor(matrix, row, col, size);
+            const sign = (row + col) % 2 === 0 ? 1 : -1;
+            let explanation = '<h3 class="text-lg font-semibold">Giải thích chi tiết:</h3>';
+            explanation += `<p>Cofactor C(${row + 1},${col + 1}) được tính bằng công thức: C(${row + 1},${col + 1}) = (-1)^(${row + 1}+${col + 1}) × det(ma trận con).</p>`;
+            explanation += `<div class="font-bold mt-2">Ma trận:</div> ${matrixToString(matrix)}`;
+            explanation += `<div class="font-bold mt-2">Bước 1: Xác định dấu</div>`;
+            explanation += `<p>Dấu = (-1)^(${row + 1}+${col + 1}) = ${sign}</p>`;
+            explanation += `<div class="font-bold mt-2">Bước 2: Lấy ma trận con</div>`;
+            explanation += `<p>Xóa hàng ${row + 1} và cột ${col + 1} để được ma trận con:</p>`;
+            explanation += `${matrixToString(minor)}`;
+            explanation += `<div class="font-bold mt-2">Bước 3: Tính định thức ma trận con</div>`;
+            const minorDet = calculateDeterminant(minor, size - 1);
+            if (size - 1 === 2) {
+                explanation += `<p>det = ${minor[0][0]} × ${minor[1][1]} - ${minor[0][1]} × ${minor[1][0]} = ${minorDet}</p>`;
+            } else {
+                explanation += `<p>det = ${minor[0][0]} × cofactor(1,1) = ${minorDet}</p>`;
+            }
+            explanation += `<div class="font-bold mt-2">Bước 4: Tính cofactor</div>`;
+            explanation += `<p>C(${row + 1},${col + 1}) = ${sign} × ${minorDet} = ${answer}</p>`;
+            return explanation;
+        }
+
+        function showQuestions() {
+            const questionsDiv = document.getElementById('questions');
+            questionsDiv.innerHTML = '';
+            questions.forEach((q, index) => {
+                const questionHtml = `
+                    <div class="card bg-base-100 shadow-md p-4">
+                        <p class="font-semibold text-lg mb-2">Câu ${index + 1}: ${q.text}</p>
+                        <div class="options flex flex-col space-y-2">
+                            ${q.options.map((option, i) => `
+                                <label>
+                                    <input type="radio" name="answer-${index}" value="${option.value}" class="radio radio-primary">
+                                    <span class="font-bold">${option.label}.</span>
+                                    <span>${q.text.includes('định thức') || q.text.includes('cofactor') ? option.value : matrixToString(option.display)}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                questionsDiv.innerHTML += questionHtml;
+            });
         }
 
         function finishQuiz() {
-            endTime = new Date().getTime();
-            clearInterval(timerInterval);
-            
-            const timeTaken = Math.floor((endTime - startTime) / 1000);
-            const minutes = Math.floor(timeTaken / 60);
-            const seconds = timeTaken % 60;
-            
-            document.getElementById('quizScreen').classList.add('hidden');
-            document.getElementById('resultScreen').classList.remove('hidden');
-            
-            document.getElementById('resultDetails').innerHTML = `
-                <p>Họ tên: ${studentName}</p>
-                <p>MSSV: ${studentId}</p>
-                <p>Chủ đề: ${getTopicName(selectedTopic)}</p>
-                <p>Kích thước ma trận: ${matrixSize}x${matrixSize}</p>
-                <p>Điểm số: ${score}/${questions.length}</p>
-                <p>Tỷ lệ đúng: ${Math.round((score/questions.length)*100)}%</p>
-            `;
-            
-            document.getElementById('timeTakenDisplay').innerHTML = `
-                <p>Thời gian làm bài: ${minutes} phút ${seconds} giây</p>
-            `;
-        }
-
-        function getTopicName(topic) {
-            switch(topic) {
-                case "multiply": return "Nhân Ma Trận";
-                case "add": return "Cộng Ma Trận";
-                case "determinant": return "Định Thức";
-                case "inverse": return "Ma Trận Đảo";
-                default: return "";
+            userAnswers = [];
+            let allAnswered = true;
+            for (let i = 0; i < questions.length; i++) {
+                const selected = document.querySelector(`input[name="answer-${i}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    break;
+                }
+                userAnswers[i] = {
+                    value: selected.value,
+                    label: questions[i].options.find(opt => opt.value === selected.value).label
+                };
             }
-        }
 
-        function updateTimer() {
-            const currentTime = new Date().getTime();
-            const timeElapsed = Math.floor((currentTime - startTime) / 1000);
-            const minutes = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
-            const seconds = (timeElapsed % 60).toString().padStart(2, '0');
-            
-            document.getElementById('timer-box').textContent = `Thời gian: ${minutes}:${seconds}`;
-        }
+            if (!allAnswered) {
+                document.getElementById('error-message').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('error-message').classList.add('hidden');
 
-        function updateNavigationButtons() {
-            const backButton = document.querySelector('.btn-back');
-            const nextButton = document.querySelector('.btn-next');
-            
-            backButton.disabled = currentQuestion === 0;
-            nextButton.disabled = currentQuestion === questions.length - 1;
-        }
-
-        function restartQuiz() {
-            // Reset các biến
-            questions = [];
-            currentQuestion = 0;
+            clearInterval(timer);
             score = 0;
-            quizStarted = false;
-            startTime = 0;
-            endTime = 0;
-            
-            // Hiển thị màn hình chào mừng, ẩn màn hình kết quả
-            document.getElementById('resultScreen').classList.add('hidden');
-            document.getElementById('introScreen').classList.remove('hidden');
-            
-            // Reset form
-            document.getElementById('studentName').value = '';
-            document.getElementById('studentId').value = '';
-            document.querySelectorAll('.btn-topic').forEach(btn => btn.classList.remove('selected'));
-            selectedTopic = "";
+            let explanationText = '';
+
+            for (let i = 0; i < questions.length; i++) {
+                const isCorrect = userAnswers[i].value === questions[i].answer;
+                score += isCorrect ? 1 : 0;
+                const userAnswerDisplay = questions[i].text.includes('định thức') || questions[i].text.includes('cofactor') ? userAnswers[i].value : matrixToString(JSON.parse(userAnswers[i].value));
+                const correctAnswerDisplay = questions[i].text.includes('định thức') || questions[i].text.includes('cofactor') ? questions[i].answer : matrixToString(JSON.parse(questions[i].answer));
+                explanationText += `
+                    <div class="card bg-base-100 shadow-md p-4">
+                        <p class="font-semibold text-lg mb-2">Câu ${i + 1}: ${questions[i].text}</p>
+                        <p class="mb-1"><strong>Đáp án của bạn:</strong> ${userAnswers[i].label}. ${userAnswerDisplay} <span class="${isCorrect ? 'text-success' : 'text-error'}">${isCorrect ? '(Đúng)' : '(Sai)'}</span></p>
+                        <p class="mb-1"><strong>Đáp án đúng:</strong> ${questions[i].answerLabel}. ${correctAnswerDisplay}</p>
+                        <div class="mt-2">${questions[i].explanation}</div>
+                    </div>
+                `;
+            }
+
+            // Hiện popup kết quả, ẩn các vùng khác
+            document.getElementById('quiz-area').classList.add('hidden');
+            document.getElementById('result-area').classList.add('hidden');
+            document.getElementById('result-popup').classList.remove('hidden');
+            document.getElementById('popup-student-name').textContent = `Họ tên: ${studentName}`;
+            document.getElementById('popup-student-id').textContent = `Mã số sinh viên: ${studentId}`;
+            document.getElementById('popup-score').textContent = `Số câu đúng: ${score}/${questions.length}`;
+            // Lưu giải thích để hiển thị sau
+            window._explanationText = explanationText;
+        }
+
+        // Đóng popup và hiện giải thích
+        function closeResultPopup() {
+            document.getElementById('result-popup').classList.add('hidden');
+            document.getElementById('result-area').classList.remove('hidden');
+            document.getElementById('result').textContent =
+                `Bạn đúng ${score}/${questions.length} câu!`;
+            document.getElementById('explanation').innerHTML = window._explanationText || '';
+            document.getElementById('explanation').classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            score = 0;
+            seconds = 0;
+            userAnswers = [];
+            questions = [];
+            studentId = '';
+            studentName = '';
+            document.getElementById('info-area').style.display = 'block';
+            document.getElementById('quiz-area').classList.add('hidden');
+            document.getElementById('result-area').classList.add('hidden');
+            document.getElementById('explanation').classList.add('hidden');
+            document.getElementById('timer').textContent = 'Thời gian: 00:00';
+            document.getElementById('student-id').value = '';
+            document.getElementById('student-name').value = '';
+            document.getElementById('error-message').classList.add('hidden');
+            document.getElementById('result-popup').classList.add('hidden');
+            clearInterval(timer);
         }
     </script>
 </body>
