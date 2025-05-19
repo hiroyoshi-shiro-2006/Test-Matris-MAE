@@ -417,10 +417,54 @@
             const questionsDiv = document.getElementById('questions');
             questionsDiv.innerHTML = '';
             questions.forEach((q, index) => {
+                // Tách đề bài khỏi ma trận, căn giữa ma trận
+                let questionText = '';
+                if (q.text.includes('Nhân hai ma trận:')) {
+                    questionText = `
+                        <div class="font-semibold text-lg mb-2">Câu ${index + 1}: <span class="font-bold">Nhân hai ma trận:</span></div>
+                        <div class="flex flex-col items-center gap-2 mb-2">
+                            ${q.text.match(/matrixToString\(matrixA\)\}\s*và\s*\$\{matrixToString\(matrixB\)\}/) ? '' : q.text.split('và').map(s => `<div>${s.replace(/Nhân hai ma trận:|và/g, '').trim()}</div>`).join('<div class="font-bold">và</div>')}
+                        </div>
+                    `;
+                } else if (q.text.includes('Cộng hai ma trận:')) {
+                    questionText = `
+                        <div class="font-semibold text-lg mb-2">Câu ${index + 1}: <span class="font-bold">Cộng hai ma trận:</span></div>
+                        <div class="flex flex-col items-center gap-2 mb-2">
+                            ${q.text.split('và').map(s => `<div>${s.replace(/Cộng hai ma trận:|và/g, '').trim()}</div>`).join('<div class="font-bold">và</div>')}
+                        </div>
+                    `;
+                } else if (q.text.includes('Tính định thức ma trận:')) {
+                    questionText = `
+                        <div class="font-semibold text-lg mb-2">Câu ${index + 1}: <span class="font-bold">Tính định thức ma trận:</span></div>
+                        <div class="flex flex-col items-center gap-2 mb-2">
+                            ${q.text.replace('Tính định thức ma trận:', '').trim()}
+                        </div>
+                    `;
+                } else if (q.text.includes('Tìm ma trận đảo của:')) {
+                    questionText = `
+                        <div class="font-semibold text-lg mb-2">Câu ${index + 1}: <span class="font-bold">Tìm ma trận đảo của:</span></div>
+                        <div class="flex flex-col items-center gap-2 mb-2">
+                            ${q.text.replace('Tìm ma trận đảo của:', '').trim()}
+                        </div>
+                    `;
+                } else if (q.text.includes('Tính cofactor')) {
+                    // Lấy chỉ số cofactor
+                    const match = q.text.match(/C\((\d+),(\d+)\)/);
+                    const cofLabel = match ? `C(${match[1]},${match[2]})` : '';
+                    questionText = `
+                        <div class="font-semibold text-lg mb-2">Câu ${index + 1}: <span class="font-bold">Tính cofactor ${cofLabel} của ma trận:</span></div>
+                        <div class="flex flex-col items-center gap-2 mb-2">
+                            ${q.text.replace(/Tính cofactor C\(\d+,\d+\) của ma trận:/, '').trim()}
+                        </div>
+                    `;
+                } else {
+                    questionText = `<div class="font-semibold text-lg mb-2">Câu ${index + 1}: ${q.text}</div>`;
+                }
+
                 const questionHtml = `
                     <div class="card bg-base-100 shadow-md p-4">
-                        <p class="font-semibold text-lg mb-2">Câu ${index + 1}: ${q.text}</p>
-                        <div class="options flex flex-col space-y-2">
+                        ${questionText}
+                        <div class="options flex flex-col space-y-2 mt-2">
                             ${q.options.map((option, i) => `
                                 <label>
                                     <input type="radio" name="answer-${index}" value="${option.value}" class="radio radio-primary">
