@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz: Tính Định Thức Ma Trận</title>
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.min.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+      function generateQuestion(size) {
+        const matrix = Array.from({ length: size }, () => Array.from({ length: size }, () => Math.floor(Math.random() * 5 - 2)));
+        const correct = math.det(matrix);
+        const roundedCorrect = Math.round(correct * 100) / 100;
+        const options = [roundedCorrect];
+        while (options.length < 4) {
+          let noise = Math.floor(Math.random() * 10 - 5);
+          let option = Math.round((correct + noise) * 100) / 100;
+          if (!options.includes(option)) options.push(option);
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        const explanation = `Sử dụng công thức định thức từ math.js: det(${JSON.stringify(matrix)}) = ${roundedCorrect}`;
+        return { matrix, correct: roundedCorrect, options, explanation };
+      }
+
+      function renderQuiz(size) {
+        const container = document.getElementById('quiz');
+        container.innerHTML = '';
+
+        const questions = [
+          generateQuestion(size),
+          generateQuestion(size),
+          generateQuestion(size),
+          generateQuestion(size),
+          generateQuestion(size),
+        ];
+
+        questions.forEach((q, i) => {
+          const qEl = document.createElement('div');
+          qEl.className = 'mb-6 p-4 border rounded-xl shadow bg-white';
+
+          const matrixLatex = `\\begin{bmatrix} ${q.matrix.map(r => r.join(' & ')).join(' \\ ')} \\end{bmatrix}`;
+          qEl.innerHTML = `
+            <div class="text-lg font-semibold mb-2">Câu ${i + 1}: Tính định thức của ma trận sau:</div>
+            <div class="text-xl mb-4">$$${matrixLatex}$$</div>
+          `;
+
+          q.options.forEach((opt, j) => {
+            const label = document.createElement('label');
+            label.className = 'block mb-2 cursor-pointer';
+
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = `q${i}`;
+            input.value = opt;
+            input.className = 'mr-2';
+
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(opt));
+            qEl.appendChild(label);
+          });
+
+          const explanationDiv = document.createElement('div');
+          explanationDiv.id = `explain${i}`;
+          explanationDiv.className = 'mt-2 text-gray-700 hidden';
+          qEl.appendChild(explanationDiv);
+
+          container.appendChild(qEl);
+        });
+
+        document.getElementById('submitBtn').onclick = () => {
+          let score = 0;
+          questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const explanationDiv = document.getElementById(`explain${i}`);
+            if (selected) {
+              const isCorrect = Number(selected.value) === q.correct;
+              if (isCorrect) score++;
+              explanationDiv.innerHTML = `${isCorrect ? '✅ Đúng' : '❌ Sai'} – Giải thích: ${q.explanation}`;
+              explanationDiv.classList.remove('hidden');
+            } else {
+              explanationDiv.innerHTML = '⚠️ Bạn chưa chọn đáp án.';
+              explanationDiv.classList.remove('hidden');
+            }
+          });
+          document.getElementById('result').textContent = `Bạn đúng ${score}/${questions.length} câu.`;
+        };
+      }
+
+      document.getElementById('startBtn').addEventListener('click', () => {
+        const size = Number(document.getElementById('matrixSize').value);
+        renderQuiz(size);
+      });
+    });
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md">
+    <h1 class="text-2xl font-bold mb-4 text-center">Đề thi trắc nghiệm: Tính Định Thức Ma Trận</h1>
+
+    <div class="mb-4 text-center">
+      <label for="matrixSize" class="mr-2 font-medium">Chọn kích thước ma trận:</label>
+      <select id="matrixSize" class="border px-2 py-1 rounded">
+        <option value="2">2 x 2</option>
+        <option value="3">3 x 3</option>
+      </select>
+      <button id="startBtn" class="ml-4 bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">
+        Bắt đầu thi
+      </button>
+    </div>
+
+    <div id="quiz"></div>
+
+    <button id="submitBtn" class="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+      Nộp bài
+    </button>
+    <div id="result" class="mt-4 text-xl font-semibold text-green-600"></div>
+  </div>
+</body>
+</html>
